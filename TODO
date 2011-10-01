@@ -1,0 +1,7 @@
+* Integrate the test_library in test check
+
+* Make thorough valgrind examination.
+
+* Autogenerate API documentation.
+
+* Friendly introduction.

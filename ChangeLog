@@ -1,0 +1,22 @@
+2006-07-03  Dov Grobgeld  <dov.grobgeld@gmail.com>
+
+	* Released version 0.1.4 .
+
+	* Fixed memory leak in slip::llip.
+
+	* libplis/test_library.cc: Added tests for new functions.
+
+	* libplis/plis.cc, libplis/plis.h: Added functions slipvprintf() 
+	and slip_read_file().
+
+	* Added the switch "m" for multiline substitutions.
+
+	* Fixed crash in substitution of "^"
+
+2005-01-14  Dov Grobgeld  <dov.grobgeld@gmail.com>
+
+	* Added plis.pc .
+
+	* Fixed documentation which was installed in the wrong place.
+	
+

@@ -111,7 +111,7 @@ int slip::rindex(const slip& s, int offset)
 
 int slip::wsplit(llip& sl)
 {
-  int i,j,cnt;
+  int i,cnt;
   slip blank=" ";
   int in_word = 0;
   int word_start_idx;
@@ -119,7 +119,7 @@ int slip::wsplit(llip& sl)
   sl.clear();
   i=0; cnt=0;
 
-  for (i=0; i<pstr.length(); i++)  {
+  for (i=0; i<(int)pstr.length(); i++)  {
     char ch = pstr[i];
 	
     /* printf("%c\n", *p); fflush(stdout); */
@@ -208,11 +208,11 @@ int slip::tr(const char *sl, const char *rl, const char *opts)
   // build search array, which is a 256 byte array that stores the index+1
   // in the search string for each character found, == 0 if not in search
   memset(fr, 0, 256);
-  for(i=0;i<strlen(sl);i++)
+  for(i=0;i<(int)strlen(sl);i++)
     {
       if(i && sl[i] == '-')
 	{ // got a range
-	  assert(i+1 < strlen(sl) && lstc <= sl[i+1]); // sanity check
+	  assert(i+1 < (int)strlen(sl) && (int)lstc <= sl[i+1]); // sanity check
 	  for(unsigned char c=lstc+1;c<=sl[i+1];c++)
 	    {
 	      fr[c]= ++flen;
@@ -222,7 +222,7 @@ int slip::tr(const char *sl, const char *rl, const char *opts)
       else
 	{
 	  lstc= sl[i];
-	  fr[sl[i]]= ++flen;
+	  fr[(int)sl[i]]= ++flen;
 	}
     }
 
@@ -262,7 +262,7 @@ int slip::tr(const char *sl, const char *rl, const char *opts)
       if (cflg) // complement, ie if NOT in f
 	{ 
 	  char rc= !dflg ? t[t.length()-1] : '\0'; // always use last character for replacement
-	  if((off=fr[(*this)[i]]) == 0) // not in map
+	  if((off=fr[(int)(*this)[i]]) == 0) // not in map
 	    { 
 	      cnt++;
 	      if(!dflg && (!sflg || tmp.length() == 0 || tmp[tmp.length()-1] != rc))
@@ -272,7 +272,7 @@ int slip::tr(const char *sl, const char *rl, const char *opts)
 	}
       else
 	{ // in fr so substitute with t, if no equiv in t then delete
-	  if((off=fr[(*this)[i]]) > 0)
+	  if((off=fr[(int)(*this)[i]]) > 0)
 	    {
 	      off--; cnt++;
 	      if(rlen==0 && !dflg && (!sflg || tmp.length() == 0 || tmp[tmp.length()-1] != (*this)[i])) tmp += (*this)[i]; // stays the same
@@ -482,7 +482,7 @@ llip llip::grep(const char *rege, const char *opts)
   llip return_list;
   
   Regexp rexp(rege, opts);    // compile once
-  for(int i=0;i<size();i++)
+  for(int i=0;i<(int)size();i++)
     {
       if(rexp.match((*this)[i].str()))
 	{

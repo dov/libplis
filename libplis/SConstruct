@@ -1,0 +1,87 @@
+import re
+
+linkflags = []
+
+if ARGUMENTS.get('debug', 0):
+    cppflags=["-Wall", "-g"]
+else:
+    cppflags=["-Wall", "-O2"]
+
+env = Environment(CPPFLAGS= cppflags,
+                  LINKFLAGS = linkflags,
+                  )
+
+# All purpose template filling routine
+def template_fill(env, target, source):
+    out = open(str(target[0]), "wb")
+    inp = open(str(source[0]), "r")
+
+    for line in inp.readlines():
+        line = re.sub('@(.*?)@',
+                      lambda x: env[x.group(1)],
+                      line)
+        out.write(line)
+        
+    out.close()
+    inp.close()
+
+if ARGUMENTS.get('mingw', 0):
+    env['CC']='i686-w64-mingw32-gcc',
+    env['CXX']='i686-w64-mingw32-g++'
+    env['AR']='i686-w64-mingw32-ar'
+    env['RANLIB']='i686-w64-mingw32-ranlib'
+#    env.ParseConfig("PKG_CONFIG_PATH=/usr/local/mingw32/lib/pkgconfig:/usr/i686-w64-mingw32/sys-root/mingw/lib/pkgconfig pkg-config --cflags --libs " )
+    env['OBJSUFFIX']=".obj"
+    env['PROGSUFFIX'] = ".exe"
+    env['PREFIX'] = "/usr/local/mingw32"
+elif env['PLATFORM'] == "cygwin" :
+#    env.ParseConfig("pkg-config --cflags --libs " + libs)
+    linkflags += ['-mms-bitfields',
+                  '-mno-cygwin',
+                  '-mwindows'
+                  ]
+    cppflags += ['-mms-bitfields',
+                 '-mno-cygwin']
+    env.Append(CPPPATH=['/usr/local/include'],
+               PREFIX=['/usr/local']
+               )
+else :
+    env.ParseConfig("env PKG_CONFIG_PATH=/usr/local/lib/pkgconfig pkg-config --cflags --libs " + libs)
+    env.Append(PREFIX=['/usr/local'],
+               )
+
+env.Append(CPPPATH=["."])
+env.Append(prefix=env['PREFIX'],
+           exec_prefix='${prefix}/bin',
+           libdir='${prefix}/lib',
+           includedir='${prefix}/include',
+           VERSION="0.1.4")
+print 'env[prefix]',env['prefix']
+env.Command("plis.pc",
+            ["../plis.pc.in",
+             "SConstruct"
+             ],
+            template_fill
+            )
+
+env.Append(CPPFLAGS= cppflags,
+           LINKFLAGS = linkflags,
+           LIBS=["pcre"])
+include = ['plis.h','plis_regexp.h']
+
+lib = env.Library('plis',
+                  ['plis.cc'
+                   ]) 
+
+env.Program('test_library',
+            ['test_library.cc',
+             lib])
+
+env.Alias("install",
+          [env.Install('${PREFIX}/lib',
+                       lib),
+           env.Install('${PREFIX}/include',
+                       include),
+           env.Install('${PREFIX}/lib/pkgconfig',
+                       'plis.pc'),
+           ])

@@ -1,6 +1,7 @@
 import re
 
 linkflags = []
+libs = 'glib-2.0 libpcre'
 
 if ARGUMENTS.get('debug', 0):
     cppflags=["-Wall", "-g"]
@@ -43,11 +44,11 @@ elif env['PLATFORM'] == "cygwin" :
     cppflags += ['-mms-bitfields',
                  '-mno-cygwin']
     env.Append(CPPPATH=['/usr/local/include'],
-               PREFIX=['/usr/local']
+               PREFIX='/usr/local'
                )
 else :
     env.ParseConfig("env PKG_CONFIG_PATH=/usr/local/lib/pkgconfig pkg-config --cflags --libs " + libs)
-    env.Append(PREFIX=['/usr/local'],
+    env.Append(PREFIX='/usr/local',
                )
 
 env.Append(CPPPATH=["."])

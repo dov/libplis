@@ -130,6 +130,9 @@ namespace plis {
       /*! split a string on a regexp
        */
       llip split(const char *pat= "[ \\t\\n]+", int limit= -1);
+
+      /*! \brief join a list on a pattern and return the result like in python */
+      slip join(llip &sl, const char *pat=" ") const;
       
       int operator<(const slip& s) const { return (strcmp(pstr.c_str(), s) < 0); }
       int operator>(const slip& s) const { return (strcmp(pstr.c_str(), s) > 0); }
@@ -176,7 +179,7 @@ namespace plis {
       
       /*! \brief A wrapper for the atof() function */
       double atof();
-      
+
     private:
       void insert(int pos, int len, const char *pt, int nlen);
       
@@ -240,6 +243,7 @@ namespace plis {
     public:
       llip(int sz=6) {};
       llip(const llip& sl) : std::deque<slip>(sl) {};
+      llip(std::initializer_list<const char*> ilist);
       
       /*! \brief join a list on a pattern and return the result */
       slip join(const char *pat= " ");

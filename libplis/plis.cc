@@ -114,7 +114,7 @@ int slip::wsplit(llip& sl)
   int i,cnt;
   slip blank=" ";
   int in_word = 0;
-  int word_start_idx;
+  int word_start_idx = 0;
     
   sl.clear();
   i=0; cnt=0;
@@ -169,6 +169,11 @@ llip slip::split(const char *pat, int limit)
  
   l.split(*this, pat, limit);
   return l;
+}
+
+slip slip::join(llip &sl, const char *pat) const
+{
+  return sl.join(pat);
 }
 
 substring slip::substr(int offset, int len)
@@ -403,6 +408,13 @@ double slip::atof()
   return ::atof(*this);
 }
  
+// Constructor
+llip::llip(std::initializer_list<const char*> ilist)
+{
+  for (auto it=ilist.begin(); it != ilist.end(); ++it)
+    push_back(*it);
+}
+
 slip llip::join(const char *pat)
 {
   slip joined_string = "";
@@ -569,7 +581,7 @@ int slip_read_file(slip filename,
     slip s;
     ifstream inf;
 
-    inf.open(filename);
+    inf.open(filename.str());
 
     if (!inf.is_open()) {
         contents = "Failed opening file!\n";

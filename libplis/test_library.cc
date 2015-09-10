@@ -157,6 +157,22 @@ int main()
         count_ok += test_ok(slip_read_file("nosuchfile", S_) != 0,  38);
     }
 
+    // C++11 operators
+    {
+        S_ = "the quick brown fox";
+        llip Q_ = S_.split();
+
+        slip jj;
+        for (auto& s : Q_)
+          jj += s;
+      
+        count_ok += test_ok(jj=="thequickbrownfox",                39);
+
+        // Initializer list.
+        llip Q1_ { "the", "quick", "brown", "fox" };
+        count_ok += test_ok(slip("").join(Q1_,",")== "the,quick,brown,fox",     40);
+    }
+
     /*======================================================================
     //  End of tests. Create summary.
     //----------------------------------------------------------------------*/

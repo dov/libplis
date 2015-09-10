@@ -9,6 +9,7 @@ else:
     cppflags=["-Wall", "-O2"]
 
 env = Environment(CPPFLAGS= cppflags,
+                  CXXFLAGS = ["-std=c++0x"],
                   LINKFLAGS = linkflags,
                   )
 

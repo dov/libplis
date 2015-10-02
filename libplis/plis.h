@@ -291,13 +291,6 @@ namespace plis {
   slip slipprintf(const char *, ...);
 
   /** 
-   * Create a sups by vprintf like formatting syntax.
-   * 
-   * @return 
-   */
-  slip slipvprintf(const char *, va_list args);
-
-  /** 
    * A convenence function for reading a file into a slip.
    * 
    * @param filename File name.

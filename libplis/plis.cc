@@ -532,46 +532,41 @@ slip join(llip& sl, const char *pat)
 
 slip slipprintf(const char *fmt, ...)
 {
+  int len;
+  char *buffer;
   va_list args;
   
-  va_start(args,fmt);
-  return slipvprintf(fmt, args);
-}
+  /* Estimate the result as twice the fmt size. It would be much more
+     efficient here to search for %s arguments and allocate according to t
+     he size of the corresponding argument...
+  */
+  len = strlen(fmt)*2;
+    
+  if (len < 32)  // No point in allocating very small strings...
+    len = 32;
+    
+  buffer = (char*)malloc(len);
+  while (1)
+    {
+      va_start(args,fmt);
 
-slip slipvprintf(const char *fmt, va_list args) 
-{
-  int len;
-    char *buffer;
-    
-    /* Estimate the result as twice the fmt size. It would be much more
-       efficient here to search for %s arguments and allocate according to t
-       he size of the corresponding argument...
-    */
-    len = strlen(fmt)*2;
-    
-    if (len < 32)  // No point in allocating very small strings...
-      len = 32;
-    
-    
-    buffer = (char*)malloc(len);
-    while (1)
-      {
-        /* Try to print in the allocated space. */
-        int nchars = vsnprintf(buffer, len, fmt, args);
+      /* Try to print in the allocated space. */
+      int nchars = vsnprintf(buffer, len, fmt, args);
+      va_end(args);
         
-        /* If that worked, return the string. */
-        if (nchars >= 0 && nchars < len)
-          break;
+      /* If that worked, return the string. */
+      if (nchars >= 0 && nchars < len)
+        break;
         
-	/* Else try again with twice as much space. */
-	len *= 2;
-	buffer = (char *)realloc(buffer, len);
-      }
+      /* Else try again with twice as much space. */
+      len *= 2;
+      buffer = (char *)realloc(buffer, len);
+    }
     
-    slip s(buffer);
-    free(buffer);
+  slip s(buffer);
+  free(buffer);
     
-    return s;
+  return s;
 }
 
 int slip_read_file(slip filename,

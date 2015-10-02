@@ -132,16 +132,20 @@ int main()
     filestr.close();
     count_ok += test_ok(files == "1: The quick\n2: brown fox\n",    36);
 
+    // Test that the realloc works in slipprintf.
+    S_ = "012345678-1-2345678-2-2345678-3-2345678-";
+    count_ok += test_ok(slipprintf("%s", S_.c_str())==S_,           37);    
+
     /* Tests that crashed at one point or another */
     S_ = "the\nquick\n";
     S_.s("^","  ","gm");
-    count_ok += test_ok(S_ == "  the\n  quick\n  ",                 37);
+    count_ok += test_ok(S_ == "  the\n  quick\n  ",                 38);
     
 
     /* Testing reading of a file */
     {
         FILE *test_file = fopen("test.txt", "w");
-        count_ok += test_ok(test_file != NULL,                      36);
+        count_ok += test_ok(test_file != NULL,                      39);
         if (test_file != NULL) {
             // This currently fails unless the string ends with a \n
             slip stest = "The quick\nBrown\nFox\n";
@@ -151,10 +155,10 @@ int main()
             S_.chomp();
             
             if (slip_read_file("test.txt", S_) == 0) 
-                count_ok += test_ok(S_ == stest,                    37);
+                count_ok += test_ok(S_ == stest,                    40);
         }
 
-        count_ok += test_ok(slip_read_file("nosuchfile", S_) != 0,  38);
+        count_ok += test_ok(slip_read_file("nosuchfile", S_) != 0,  41);
     }
 
     // C++11 operators
@@ -166,11 +170,11 @@ int main()
         for (auto& s : Q_)
           jj += s;
       
-        count_ok += test_ok(jj=="thequickbrownfox",                39);
+        count_ok += test_ok(jj=="thequickbrownfox",                42);
 
         // Initializer list.
         llip Q1_ { "the", "quick", "brown", "fox" };
-        count_ok += test_ok(slip("").join(Q1_,",")== "the,quick,brown,fox",     40);
+        count_ok += test_ok(slip("").join(Q1_,",")== "the,quick,brown,fox",     43);
     }
 
     /*======================================================================

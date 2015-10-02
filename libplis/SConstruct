@@ -1,5 +1,6 @@
 import re
 
+libs = ['pcre']
 linkflags = []
 libs = 'glib-2.0 libpcre'
 

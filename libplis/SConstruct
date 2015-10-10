@@ -59,7 +59,7 @@ env.Append(prefix=env['PREFIX'],
            libdir='${prefix}/lib',
            includedir='${prefix}/include',
            VERSION="0.1.4")
-print 'env[prefix]',env['prefix']
+
 env.Command("plis.pc",
             ["../plis.pc.in",
              "SConstruct"
@@ -88,3 +88,4 @@ env.Alias("install",
            env.Install('${PREFIX}/lib/pkgconfig',
                        'plis.pc'),
            ])
+

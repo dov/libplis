@@ -352,9 +352,14 @@ int slip::s(const char *exp, const char *repl, const char *opts)
             {
               // recursively call s() until applied to whole string
               rg= re.getgroup(0);
-              slip st(substr(rg.end()+1));
-              cnt += st.s(exp, repl, opts);
-              substr(rg.end()+1)= st;
+              if (rg.end() >= 0)
+                {
+                  slip st(substr(rg.end()+1));
+                  cnt += st.s(exp, repl, opts);
+                  substr(rg.end()+1)= st;
+                }
+              else
+                  substr(rg.end())= repl;
             }
         }
       if(!strchr(repl, '$')) // straight, simple substitution

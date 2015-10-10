@@ -140,12 +140,21 @@ int main()
     S_ = "the\nquick\n";
     S_.s("^","  ","gm");
     count_ok += test_ok(S_ == "  the\n  quick\n  ",                 38);
-    
+
+    // Test substitution at the beginning and end with global flag
+    S_ = " quick ";
+    S_.s("\\s*","","g");
+    count_ok += test_ok(S_ == "quick",                              39);
+
+    // Test empty strings
+    S_ = "";
+    S_.s("\\s*","","g");
+    count_ok += test_ok(S_ == "",                                   40);
 
     /* Testing reading of a file */
     {
         FILE *test_file = fopen("test.txt", "w");
-        count_ok += test_ok(test_file != NULL,                      39);
+        count_ok += test_ok(test_file != NULL,                      41);
         if (test_file != NULL) {
             // This currently fails unless the string ends with a \n
             slip stest = "The quick\nBrown\nFox\n";
@@ -155,10 +164,10 @@ int main()
             S_.chomp();
             
             if (slip_read_file("test.txt", S_) == 0) 
-                count_ok += test_ok(S_ == stest,                    40);
+                count_ok += test_ok(S_ == stest,                    42);
         }
 
-        count_ok += test_ok(slip_read_file("nosuchfile", S_) != 0,  41);
+        count_ok += test_ok(slip_read_file("nosuchfile", S_) != 0,  43);
     }
 
     // C++11 operators

@@ -39,12 +39,14 @@ namespace plis {
     public:
       slip():pstr(){}
       slip(const slip& s) : pstr(s.str()){}     
+      slip(const std::string& s) : pstr(s){}     
       slip(const char *s) : pstr(s){}
       slip(const char *s, int n) : pstr(s,n){}
+      slip(int n, char c) : pstr(n,c){}
       //    PLIS_INLINE slip(long l);
       slip(const char c) : pstr(1,c) {};
       slip(const substring& sb);
-      
+
       /*! \brief Assignment operator from const char. */
       slip& operator=(const char *s) {
 	if (s==NULL)
@@ -55,6 +57,7 @@ namespace plis {
       }
       /*! \brief Copy assignment. */
       slip& operator=(const slip& s);
+      slip& operator=(const std::string& s);
       slip& operator=(const substring& sb);
       
       /*! \brief Casting operator to const char* */
@@ -80,6 +83,12 @@ namespace plis {
       
       /*! \brief Returns position of a string within a from the right string */
       int rindex(const slip& s, int offset= -1);
+
+      /*! \brief Whether the string ends with the string s */
+      bool startswith(const slip& s);
+
+      /*! \brief Whether the string ends with the string s */
+      bool endswith(const slip& s);
       
       /*! \brief White space split */
       int wsplit(llip&);
@@ -170,6 +179,9 @@ namespace plis {
       
       /*! \brief Return the underlying std::string string. */
       const std::string& str() const { return pstr; }
+      
+      /*! \brief Return the underlying std::string string. */
+      std::string& str() { return pstr; }
       
       /*! \brief Compatibility function with string. */
       const char *c_str() const { return pstr.c_str(); }

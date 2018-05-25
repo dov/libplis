@@ -49,9 +49,14 @@ elif env['PLATFORM'] == "cygwin" :
                PREFIX='/usr/local'
                )
 else :
+    if ARGUMENTS.get('clang',0):
+        env['CC'] = 'clang'
+        env['CXX'] = 'clang++'
+
     env.ParseConfig("env PKG_CONFIG_PATH=/usr/local/lib/pkgconfig pkg-config --cflags --libs " + libs)
     env.Append(PREFIX='/usr/local',
                )
+    
 
 env.Append(CPPPATH=["."])
 env.Append(prefix=env['PREFIX'],
@@ -83,7 +88,7 @@ env.Program('test_library',
 env.Alias("install",
           [env.Install('${PREFIX}/lib',
                        lib),
-           env.Install('${PREFIX}/include',
+           env.Install('${PREFIX}/include/plis',
                        include),
            env.Install('${PREFIX}/lib/pkgconfig',
                        'plis.pc'),

@@ -23,6 +23,12 @@ slip& slip::operator=(const slip& n)
   return *this;
 }
 
+slip& slip::operator=(const string& s)
+{
+  pstr= s;
+  return *this;
+}
+
 slip& slip::operator=(const substring& sb)
 {
   if (!sb.pt) {
@@ -107,6 +113,20 @@ int slip::rindex(const slip& s, int offset)
       if(strncmp(&pstr[i], s, s.length()) == 0) return i;
     }
   return -1;
+}
+
+bool slip::startswith(const slip& s)
+{
+    if (s.length() > length())
+        return false;
+    return std::equal(s.str().begin(), s.str().end(), pstr.begin());
+}
+
+bool slip::endswith(const slip& s)
+{
+    if (s.length() > length())
+        return false;
+    return std::equal(s.str().rbegin(), s.str().rend(), pstr.rbegin());
 }
 
 int slip::wsplit(llip& sl)

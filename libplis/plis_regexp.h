@@ -50,9 +50,6 @@ namespace plis
     {
     private:
       pcre *repat;
-      const char *target; // only used as a base address to get an offset
-      int res;
-      int iflg;
       int ovector[30];
       int number_of_substrings;
       
@@ -66,7 +63,7 @@ namespace plis
 	  const char *error;
 	  int error_offset;
 	  
-	  repat = pcre_compile(rege, flags, &error, &error_offset, NULL);
+	  repat = pcre_compile(rege, flags, &error, &error_offset, nullptr);
 	  if (repat == NULL)
 	    {
 	      std::cerr << "pcre_compile() failed!\n";
@@ -87,7 +84,7 @@ namespace plis
 	  const char *subject = targ.c_str();  // Shortcut
 	  
 	  result= pcre_exec(repat,             /* result of pcre_compile() */
-			    NULL,              /* we didn't study the pattern */
+			    nullptr,           /* we didn't study the pattern */
 			    subject,           /* the subject string */
 			    targ.size(),       /* the length of the subject string */
 			    0,                 /* start at offset 0 in the subject */

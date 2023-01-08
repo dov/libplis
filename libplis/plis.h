@@ -192,6 +192,15 @@ namespace plis {
       /*! \brief A wrapper for the atof() function */
       double atof();
 
+      // Some proxies.
+      void resize(size_t size) {
+        pstr.resize(size);
+      }
+
+      void reserve(size_t size) {
+        pstr.reserve(size);
+      }
+
     private:
       void insert(int pos, int len, const char *pt, int nlen);
       

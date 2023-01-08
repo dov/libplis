@@ -18,3 +18,5 @@ docs/latex
 /libtool
 /plis.pc
 /stamp-h1
+*.obj
+*.exe

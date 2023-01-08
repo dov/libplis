@@ -1,5 +1,10 @@
 import re
 
+tools = ['default']
+if ARGUMENTS.get('vbox', 0):
+    tools = ['mingw']
+tools += ['textfile']
+
 libs = ['pcre']
 linkflags = []
 libs = 'glib-2.0 libpcre'
@@ -10,8 +15,9 @@ else:
     cppflags=["-Wall", "-O2"]
 
 env = Environment(CPPFLAGS= cppflags,
-                  CXXFLAGS = ["-std=c++0x"],
+                  CXXFLAGS = ["-std=c++1y"],
                   LINKFLAGS = linkflags,
+                  tools = tools
                   )
 
 # All purpose template filling routine
@@ -28,15 +34,27 @@ def template_fill(env, target, source):
     out.close()
     inp.close()
 
-if ARGUMENTS.get('mingw', 0):
-    env['CC']='i686-w64-mingw32-gcc',
-    env['CXX']='i686-w64-mingw32-g++'
-    env['AR']='i686-w64-mingw32-ar'
-    env['RANLIB']='i686-w64-mingw32-ranlib'
+if ARGUMENTS.get('mingw', 0) or ARGUMENTS.get('mingw64', 0):
+    if ARGUMENTS.get('mingw', 0):
+        env['HOST']='w32'
+        env['HOSTBITS']='32'
+        env['ARCH']='i686-w64-mingw32'
+        env['LIBGCCDLL'] = "libgcc_s_sjlj-1.dll"
+    elif ARGUMENTS.get('mingw64', 0):
+        env['HOST']='w64'
+        env['HOSTBITS']='64'
+        env['ARCH']='x86_64-w64-mingw32'
+        env['LIBGCCDLL'] = "libgcc_s_seh-1.dll"
+    env['CC']='${ARCH}-gcc'
+    env['CXX']='${ARCH}-g++'
+    env['AR']='${ARCH}-ar'
+    env['RANLIB']='${ARCH}-ranlib'
 #    env.ParseConfig("PKG_CONFIG_PATH=/usr/local/mingw32/lib/pkgconfig:/usr/i686-w64-mingw32/sys-root/mingw/lib/pkgconfig pkg-config --cflags --libs " )
     env['OBJSUFFIX']=".obj"
     env['PROGSUFFIX'] = ".exe"
-    env['PREFIX'] = "/usr/local/mingw32"
+    env['LOCAL_DIR']='ming${HOST}'
+    env['PREFIX']='/usr/local/${LOCAL_DIR}'
+    env['PKGCONFIG'] = "env PKG_CONFIG_PATH=/usr/${ARCH}/sys-root/mingw/lib/pkgconfig:/usr/local/${LOCAL_DIR}/lib/pkgconfig pkg-config"
 elif env['PLATFORM'] == "cygwin" :
 #    env.ParseConfig("pkg-config --cflags --libs " + libs)
     linkflags += ['-mms-bitfields',
@@ -65,12 +83,13 @@ env.Append(prefix=env['PREFIX'],
            includedir='${prefix}/include',
            VERSION="0.1.4")
 
-env.Command("plis.pc",
-            ["../plis.pc.in",
-             "SConstruct"
-             ],
-            template_fill
-            )
+env.AlwaysBuild(env.Substfile("plis.pc",
+                              "../plis.pc.in",
+                              SUBST_DICT={'@prefix@' : '$PREFIX',
+                                          '@exec_prefix@': '$exec_prefix',
+                                          '@libdir@': '$libdir',
+                                          '@includedir@': '$includedir',
+                                          '@VERSION@': '$VERSION'}))
 
 env.Append(CPPFLAGS= cppflags,
            LINKFLAGS = linkflags,
@@ -83,6 +102,10 @@ lib = env.Library('plis',
 
 env.Program('test_library',
             ['test_library.cc',
+             lib])
+
+env.Program('test-intl',
+            ['test-intl.cc',
              lib])
 
 env.Alias("install",

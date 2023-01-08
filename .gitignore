@@ -20,3 +20,8 @@ docs/latex
 /stamp-h1
 *.obj
 *.exe
+*~
+/libplis/.libs/
+*.la
+*.lo
+/plis-config

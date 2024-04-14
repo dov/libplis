@@ -2,8 +2,8 @@ libplis_sources = [
   'plis.cc'
 ]
 
-pcre_dep = dependency('libpcre')
-deps = [pcre_dep]
+pcre2_dep = dependency('libpcre2-8')
+deps = [pcre2_dep]
 
 libplis = library('libplis',
                   libplis_sources,

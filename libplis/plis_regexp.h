@@ -16,117 +16,119 @@
 #include <malloc.h>
 #include <string.h>
 #include <assert.h>
-#include <pcre.h>
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 
 /*! The range class simply handles a ranged expressed as a start and an end.
   It is used internally in the Regexp and the plis classes.
- */
+*/
 namespace plis
 {
-  class Range {
-  private:
-    int st, en;
+    class Range {
+        private:
+        int st, en;
     
-  public:
-    Range()
-      {
-	st=0; en= -1;
-      }
+        public:
+        Range()
+        {
+            st=0; en= -1;
+        }
     
-    Range(int s, int e)
-      {
-	st= s; en= e;
-      }
+        Range(int s, int e)
+        {
+            st= s; en= e;
+        }
     
-    int start(void) const { return st;}
-    int end(void) const { return en;}
-    int length(void) const { return (en-st)+1;}
-  };
+        int start(void) const { return st;}
+        int end(void) const { return en;}
+        int length(void) const { return (en-st)+1;}
+    };
   
-  /*! A C++ wrapper for the PCRE engine. It is used internally by the plis
-    library for handling regular expressions.
-  */
-  class Regexp
+    /*! A C++ wrapper for the PCRE engine. It is used internally by the plis
+      library for handling regular expressions.
+    */
+    class Regexp
     {
-    private:
-      pcre *repat;
-      int ovector[30];
-      int number_of_substrings;
+        private:
+        pcre2_code *repat;
+        pcre2_match_data *match_data;
+        int number_of_substrings;
+        PCRE2_SIZE *ovector;
       
-    public:
-      /*! The constructor takes a regexp string as input and immediately
-	compiles it. The compiled version will be saved until the class
-	is destroyed. */
-      Regexp(const char *rege, const char *flag_string = "")
-	{
-	  int flags = chars_to_flags(flag_string);
-	  const char *error;
-	  int error_offset;
+        public:
+        /*! The constructor takes a regexp string as input and immediately
+          compiles it. The compiled version will be saved until the class
+          is destroyed. */
+        Regexp(const char *rege, const char *flag_string = "")
+        {
+            int options = chars_to_options(flag_string);
+            int errornumber;
+            PCRE2_SIZE erroroffset;
 	  
-	  repat = pcre_compile(rege, flags, &error, &error_offset, nullptr);
-	  if (repat == NULL)
-	    {
-	      std::cerr << "pcre_compile() failed!\n";
-	      return ;
-	    }
-	  
-	}
+            repat = pcre2_compile((PCRE2_SPTR)rege, // The pattern
+                                  PCRE2_ZERO_TERMINATED,
+                                  options,
+                                  &errornumber,
+                                  &erroroffset,
+                                  nullptr);
+            if (repat == NULL) 
+                throw std::runtime_error("pcre_compile() failed!\n");
+
+            match_data = pcre2_match_data_create_from_pattern(repat, NULL);
+            ovector = pcre2_get_ovector_pointer(match_data);
+        }
       
-      ~Regexp()
-	{
-	  free((char *)repat);
-	}    
+        ~Regexp()
+        {
+            pcre2_match_data_free(match_data);
+            pcre2_code_free(repat);
+        }    
       
-      /*! \brief match a regular expression string */
-      int match(const std::string& targ)
-	{
-	  int result;
-	  const char *subject = targ.c_str();  // Shortcut
+        /*! \brief match a regular expression string */
+        int match(const std::string& targ)
+        {
+            int rc = pcre2_match(
+              repat,                     /* the compiled pattern */
+              (PCRE2_SPTR)targ.c_str(),  /* the subject string */
+              targ.size(),               /* the length of the subject */
+              0,                         /* start at offset 0 in the subject */
+              0,                         /* default options */
+              match_data,                /* block for storing the result */
+              NULL);                     /* use default match context */
+
+            if (rc > 0)
+                number_of_substrings = rc;
+            else
+                number_of_substrings = 0;
 	  
-	  result= pcre_exec(repat,             /* result of pcre_compile() */
-			    nullptr,           /* we didn't study the pattern */
-			    subject,           /* the subject string */
-			    targ.size(),       /* the length of the subject string */
-			    0,                 /* start at offset 0 in the subject */
-			    0,                 /* default options */
-			    ovector,           /* vector for substring information */
-			    30);               /* number of elements in the vector */
-	  
-	  if (result > 0)
-	    {
-	      number_of_substrings = result;
-	    }
-	  else
-	    number_of_substrings = 0;
-	  
-	  return ((result >= 0) ? 1 : 0);
-	}
+            return ((rc >= 0) ? 1 : 0);
+        }
       
-      /*! \brief Returns number of substrings in the last match operation */
-      int groups()
-	{
-	  return number_of_substrings;
-	}
+        /*! \brief Returns number of substrings in the last match operation */
+        int groups()
+        {
+            return number_of_substrings;
+        }
       
-      /*! \brief Get a group from the last match operation */
-      Range getgroup(int n) const
-	{
-	  // assert(n < number_of_substrings);
+        /*! \brief Get a group from the last match operation */
+        Range getgroup(int n) const
+        {
+            // assert(n < number_of_substrings);
 	  
-	  return Range(ovector[2*n],
-		       ovector[2*n+1]-1);
-	}
+            return Range(ovector[2*n],
+                         ovector[2*n+1]-1);
+        }
       
-    private:
-      // Currently only recognizes the perl "i" flag for case
-      // independant matching.
-      int chars_to_flags(const std::string& flag_string)
-	{
-	  int flags = 0;
-	  if (flag_string.find("i") != std::string::npos)
-	    flags |= PCRE_CASELESS;
-	  return flags;
-	}
+        private:
+        // Currently only recognizes the perl "i" flag for case
+        // independant matching.
+        int chars_to_options(const std::string& flag_string)
+        {
+            int flags = 0;
+            if (flag_string.find("i") != std::string::npos)
+                flags |= PCRE2_CASELESS;
+            return flags;
+        }
       
     };
 };

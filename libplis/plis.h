@@ -320,7 +320,7 @@ namespace plis {
    * 
    * @return Returns 0 on success. -1 otherwise. 
    */
-  int slip_read_file(slip filename,
+  int slip_read_file(const slip& filename,
                      // output
                      slip& contents);
 };

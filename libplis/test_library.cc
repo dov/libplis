@@ -167,7 +167,12 @@ int main()
                 count_ok += test_ok(S_ == stest,                    42);
         }
 
-        count_ok += test_ok(slip_read_file("nosuchfile", S_) != 0,  43);
+        try {
+            slip_read_file("nosuchfile", S_);
+        }
+        catch(std::runtime_error& exc) {
+            count_ok += test_ok(true,                               43);
+        }
     }
 
     // C++11 operators
@@ -179,7 +184,7 @@ int main()
         for (auto& s : Q_)
           jj += s;
       
-        count_ok += test_ok(jj=="thequickbrownfox",                42);
+        count_ok += test_ok(jj=="thequickbrownfox",                44);
 
         // Initializer list.
         llip Q1_ { "the", "quick", "brown", "fox" };

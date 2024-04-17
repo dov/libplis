@@ -16,7 +16,7 @@ test_library = executable('test_library',
                           install: false)
 
 install_headers(['plis.h', 'plis_regexp.h'],
-                install_dir: 'plis'
+                install_dir: 'include/plis'
                 )
 
 # Custom target to run the test

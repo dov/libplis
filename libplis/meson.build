@@ -16,7 +16,7 @@ test_library = executable('test_library',
                           install: false)
 
 install_headers(['plis.h', 'plis_regexp.h'],
-                install_dir: 'include/plis'
+                install_dir: 'include/libplis'
                 )
 
 # Custom target to run the test
@@ -24,3 +24,8 @@ run_target('run_test',
   command: [test_library],  
   depends: [test_library],  
 )
+
+inc = include_directories('..','.')
+libplis_dep = declare_dependency(
+  include_directories : inc,
+  link_with : libplis)

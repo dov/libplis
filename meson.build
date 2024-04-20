@@ -12,7 +12,7 @@ subdir('libplis')
 pkg = import('pkgconfig')
 pkg.generate(libplis,
   name: 'libplis',
-  filebase: 'plis',
+  filebase: 'libplis',
   description: 'A perl like c++ string library',
-  subdirs: 'plis',
   version: meson.project_version())
+

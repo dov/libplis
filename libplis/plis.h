@@ -17,7 +17,7 @@
 #include <string>
 #include <stdarg.h>
 #include <deque>
-#include <plis_regexp.h>
+#include "plis_regexp.h"
 
 #define	PLIS_INLINE	inline
 

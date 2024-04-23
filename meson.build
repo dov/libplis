@@ -9,10 +9,11 @@ dep_pcre = cxx.find_library('pcre')
 subdir('libplis')
 
 # plis.pc
-pkg = import('pkgconfig')
-pkg.generate(libplis,
-  name: 'libplis',
-  filebase: 'libplis',
-  description: 'A perl like c++ string library',
-  version: meson.project_version())
-
+if not meson.is_subproject()
+  pkg = import('pkgconfig')
+  pkg.generate(libplis,
+    name: 'libplis',
+    filebase: 'libplis',
+    description: 'A perl like c++ string library',
+    version: meson.project_version())
+endif

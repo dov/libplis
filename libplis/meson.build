@@ -8,16 +8,18 @@ deps = [pcre2_dep]
 libplis = library('libplis',
                   libplis_sources,
                   dependencies : deps,    
-                  install: true)
+                  install: not meson.is_subproject())
 
 test_library = executable('test_library',
                           ['test_library.cc'],
                           link_with : libplis,
                           install: false)
 
-install_headers(['plis.h', 'plis_regexp.h'],
-                install_dir: 'include/libplis'
-                )
+if not meson.is_subproject()
+  install_headers(['plis.h', 'plis_regexp.h'],
+                  install_dir: 'include/libplis',
+                 )
+endif
 
 # Custom target to run the test
 run_target('run_test',

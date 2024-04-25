@@ -4,7 +4,6 @@ project('libplis','cpp',
         default_options : ['c_std=c++11'])
 
 cxx = meson.get_compiler('cpp')
-dep_pcre = cxx.find_library('pcre')
 
 subdir('libplis')
 

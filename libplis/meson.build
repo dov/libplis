@@ -5,7 +5,7 @@ libplis_sources = [
 pcre2_dep = dependency('libpcre2-8')
 deps = [pcre2_dep]
 
-libplis = library('libplis',
+libplis = library('plis',
                   libplis_sources,
                   dependencies : deps,    
                   install: not meson.is_subproject())

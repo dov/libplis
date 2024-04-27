@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <plis.h>
+#include <libplis/plis.h>
 #include <fstream>
 
 using namespace plis;

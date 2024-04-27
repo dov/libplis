@@ -6,7 +6,7 @@
 #include <cstring>
 #include <malloc.h>
 #include <fstream>
-#include "plis.h"
+#include "libplis/plis.h"
 
 using namespace std;
 

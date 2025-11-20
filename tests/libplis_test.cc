@@ -191,6 +191,14 @@ int main()
         count_ok += test_ok(slip("").join(Q1_,",")== "the,quick,brown,fox",     43);
     }
 
+    // fmt formatting
+    {
+        S_ = "quick";
+
+        count_ok += test_ok(fmt::format("the {} brown fox", S_)
+                            == "the quick brown fox",              45);
+    }
+
     /*======================================================================
     //  End of tests. Create summary.
     //----------------------------------------------------------------------*/

@@ -6,10 +6,14 @@ project('libplis','cpp',
 subdir('include')
 libplis_inc = include_directories('include')
 
+cxx = meson.get_compiler('cpp')
+dep_fmt = cxx.find_library('fmt')
+
 subdir('src')
 
 libplis_dep = declare_dependency(
   include_directories : libplis_inc,
+  dependencies : dep_fmt,
   link_with : libplis_lib)
 
 subdir('tests')

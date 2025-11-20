@@ -10,16 +10,17 @@
  *  llip @endlink of strings and a strings through operations like
  *  slip::split() and llip::join().
  */
-#ifndef	_PLIS_H
-#define	_PLIS_H
+#ifndef _PLIS_H
+#define _PLIS_H
 
 #include <string.h>
 #include <string>
 #include <stdarg.h>
 #include <deque>
 #include "plis_regexp.h"
+#include <fmt/core.h>
 
-#define	PLIS_INLINE	inline
+#define PLIS_INLINE     inline
 
 namespace plis {
   class substring;
@@ -329,8 +330,25 @@ namespace plis {
 //std::ostream& operator<<(std::ostream&, const plis::slip&);
 //std::ostream& operator<<(std::ostream&, const plis::llip&);
 
-#define FOREACH(var, array)\
-  for (int i=0; i<array.count() && (var=array[i],1);i++) 
+// Formatting of fmt
+// Custom formatter for CSlip
+template <>
+struct fmt::formatter<plis::slip>
+{
+  // Parses format specifications; just accept defaults here
+  constexpr auto parse(fmt::format_parse_context& Context)
+  {
+    return Context.begin();
+  }
+
+  // Formats the CSlip object using its Str() member
+  template <typename FormatContext>
+  auto format(const plis::slip& s, FormatContext& context) const
+  {
+    return fmt::format_to(context.out(), "{}", s.str());
+  }
+};
+
 
 #endif
 

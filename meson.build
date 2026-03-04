@@ -1,7 +1,7 @@
 # meson --buildtype debug build_debug
 project('libplis','cpp',
         version: '0.1.4',
-        default_options : ['c_std=c++14'])
+        default_options : ['cpp_std=c++14'])
 
 subdir('include')
 libplis_inc = include_directories('include')
